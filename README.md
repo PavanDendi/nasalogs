@@ -12,6 +12,10 @@ Write a program in Scala that downloads the dataset at ftp://ita.ee.lbl.gov/trac
 I used a Jupyter notebook to explore the log file and figure out the main logic for the program.  
 The docker image used contains Apache Spark as well as the Apache Toree kernel for Jupyter.
 
+The notebook is available for static browsing directly on github:  
+https://github.com/PavanDendi/nasalogs/blob/master/jupyter/EDA.ipynb
+
+My local dev environment can also be replicated to run the notebook interactively:  
 Run the following command to start Jupyter:
 ```
 docker run --rm -d -p 8888:8888 -v "$PWD"/jupyter:/home/jovyan/work \
