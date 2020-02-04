@@ -1,0 +1,1 @@
+Index.PACKAGES = {"com" : [], "com.pavandendi" : [], "com.pavandendi.nasalogs" : [{"object" : "com\/pavandendi\/nasalogs\/NasaLogs$.html", "name" : "com.pavandendi.nasalogs.NasaLogs"}, {"trait" : "com\/pavandendi\/nasalogs\/SparkSessionWrapper.html", "name" : "com.pavandendi.nasalogs.SparkSessionWrapper"}]};

@@ -23,11 +23,15 @@ object NasaLogs extends SparkSessionWrapper {
 
   def main(args: Array[String]) = {
 
+    // Command line spark-submit arguments
     val dataUrl = args(0)
     val topN = args(1).toInt
 
     val ingestDF = ingest(dataUrl)
     
+    // All custom logic is implemented using separate functions
+    // and chained using the transform method.
+    // This enables easier unit testing.
     val rankedDF = ingestDF.transform(parse)
                            .transform(curate)
                            .transform(rank(Array("host","path"), topN))
@@ -49,7 +53,7 @@ object NasaLogs extends SparkSessionWrapper {
 
   /**
    * Parses raw log data and extracts meaningful fields.
-   * Not all fields are used for final output, but they are preserved
+   * Not all fields are required for final output, but they are preserved
    * in this function for possible future use.
    *
    * Regex modified from article "Web Server Log Analysis with Spark", part (2b)  
