@@ -1,0 +1,4 @@
+*
+!src/
+!project/
+!build.sbt
