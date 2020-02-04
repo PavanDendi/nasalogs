@@ -55,11 +55,11 @@ Execute the project by running the docker image.
 The image is preconfigured with the correct FTP URL and a `topN` value of 3.  
 Please note that the NASA FTP server is sometimes nonresponsive, causing the program to fail occasionally.
 ```
-docker run --rm docker.pkg.github.com/pavandendi/nasalogs/nasalogs:0.0.1
+docker run --rm registry.gitlab.com/pavandendi/nasalogs/nasalogs:0.0.1
 ```
 You can also specify a custom spark-submit string to change the `topN` value.
 ```
-docker run --rm docker.pkg.github.com/pavandendi/nasalogs/nasalogs:0.0.1 \
+docker run --rm registry.gitlab.com/pavandendi/nasalogs/nasalogs:0.0.1 \
 spark-submit --master=local --class=com.pavandendi.nasalogs.NasaLogs \
 /nasalogs_2.11-0.0.1.jar $dataURL $topN
 ```
@@ -67,7 +67,7 @@ spark-submit --master=local --class=com.pavandendi.nasalogs.NasaLogs \
 ## Run Unit Tests
 Tests can be run similarly by running the build configuration of the docker image.
 ```
-docker run --rm -it docker.pkg.github.com/pavandendi/nasalogs/nasalogs-build:0.0.1 sbt test
+docker run --rm -it registry.gitlab.com/pavandendi/nasalogs/nasalogs-build:0.0.1 sbt test
 ```
 
 # Dockerfile
