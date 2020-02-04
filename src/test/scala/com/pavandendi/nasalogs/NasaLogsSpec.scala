@@ -40,13 +40,49 @@ class NasaLogsSpec
         ("""199.120.110.21 - - [01/Jul/1995:00:00:09 -0400] "GET /shuttle/missions/sts-73/mission-sts-73.html HTTP/1.0" 200 4085""")
       ).toDF("value")
 
-      val actualDF = sourceDF.transform(NasaLogs.parse())
+      val actualDF = sourceDF.transform(NasaLogs.parse)
+
+      val expectedData = List(
+        Row("199.72.81.55", "01/Jul/1995:00:00:01", "/history/apollo/", 200, 6245),
+        Row("unicomp6.unicomp.net", "01/Jul/1995:00:00:06", "/shuttle/countdown/", 200, 3985),
+        Row("199.120.110.21", "01/Jul/1995:00:00:09", "/shuttle/missions/sts-73/mission-sts-73.html", 200, 4085)
+      )
+
+      val expectedSchema = List(
+        StructField("host", StringType, true),
+        StructField("timestamp", StringType, true),
+        StructField("path", StringType, true),
+        StructField("status", IntegerType, true),
+        StructField("content_size", IntegerType, true)
+      )
+
+      val expectedDF = spark.createDataFrame(
+        spark.sparkContext.parallelize(expectedData),
+        StructType(expectedSchema)
+      )
+
+      assertSmallDataFrameEquality(actualDF, expectedDF)
+
+    }
+
+  }
+
+  describe("curate") {
+
+    it("transforms parsed data into final feature columns needed") {
+      
+      val sourceDF = Seq(
+        ("199.72.81.55", "01/Jul/1995:00:00:01", "/history/apollo/", 200, 6245),
+        ("unicomp6.unicomp.net", "01/Jul/1995:00:00:06", "/shuttle/countdown/", 200, 3985),
+        ("199.120.110.21", "", "/shuttle/missions/sts-73/mission-sts-73.html", 200, 4085)
+      ).toDF("host", "timestamp", "path", "status", "content_size")
+
+      val actualDF = sourceDF.transform(NasaLogs.curate)
 
       val expectedDF = Seq(
         ("199.72.81.55", "/history/apollo/", "01/Jul/1995"),
-        ("unicomp6.unicomp.net", "/shuttle/countdown/", "01/Jul/1995"),
-        ("199.120.110.21", "/shuttle/missions/sts-73/mission-sts-73.html", "01/Jul/1995")
-      ).toDF("host","path","date")
+        ("unicomp6.unicomp.net", "/shuttle/countdown/", "01/Jul/1995")
+      ).toDF("host", "path", "date")
 
       assertSmallDataFrameEquality(actualDF, expectedDF)
 
