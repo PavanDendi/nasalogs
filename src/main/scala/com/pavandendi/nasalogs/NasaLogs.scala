@@ -5,6 +5,18 @@ import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.expressions.Window
 import org.apache.spark.SparkFiles
 
+
+/**
+ * Downloads log data from a url and ranks the top N results.
+ * Specify the url and number of results as an argument during spark-submit.
+ * 
+ * Example `spark-submit` command:
+ * {{{
+ * spark-submit --class com.pavandendi.nasalogs.NasaLogs \
+ * /path/to/jar/nasalogs_2.11-0.0.1.jar \
+ * ftp://ita.ee.lbl.gov/traces/NASA_access_log_Jul95.gz 3
+ * }}}
+ */
 object NasaLogs extends SparkSessionWrapper {
 
   import spark.implicits._
@@ -23,6 +35,11 @@ object NasaLogs extends SparkSessionWrapper {
 
   }
 
+  /**
+   * Downloads log data and returns a Dataframe with the raw unprocessed data.
+   *
+   * @param dataUrl URL to download data from
+   */
   def ingest(dataUrl: String): DataFrame = {
 
     spark.sparkContext.addFile(dataUrl)
@@ -30,6 +47,16 @@ object NasaLogs extends SparkSessionWrapper {
   
   }
 
+  /**
+   * Parses raw log data and extracts meaningful fields.
+   * Not all fields are used for final output, but they are preserved
+   * in this function for possible future use.
+   *
+   * Regex modified from article "Web Server Log Analysis with Spark", part (2b)  
+   * https://adataanalyst.com/spark/web-server-log-analysis-spark/
+   *
+   * @param rawDF Dataframe that contains the raw log data
+   */
   def parse(rawDF: DataFrame): DataFrame = {
   
     rawDF.select(
@@ -42,6 +69,11 @@ object NasaLogs extends SparkSessionWrapper {
   
   }
 
+  /**
+   * Prepares parsed log data to be ranked
+   *
+   * @param df Dataframe that contains parsed log data
+   */
   def curate(df: DataFrame): DataFrame = {
 
     df.drop("status","content_size")
@@ -51,6 +83,14 @@ object NasaLogs extends SparkSessionWrapper {
 
   }
 
+  /**
+   * Ranks log data and returns the top results for each day.
+   * Accepts arbitrary number of columns to rank.
+   *
+   * @param colNames Array of column names to be ranked
+   * @param topN How many results to show for each day
+   * @param df Dataframe that contains parsed log data
+   */
   def rank(colNames: Array[String], topN: Integer)(df: DataFrame): DataFrame = {
   
     (for (colName <- colNames) yield {
